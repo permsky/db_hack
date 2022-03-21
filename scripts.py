@@ -14,18 +14,20 @@ def get_schoolkid(schoolkid_name: str) -> Schoolkid:
         schoolkid = Schoolkid.objects.get(full_name__contains=schoolkid_name)
     except Schoolkid.DoesNotExist:
         print('Неверно введено имя ученика')
-        exit(1)
+        return None
     except Schoolkid.MultipleObjectsReturned:
         print(
             'Найдено несколько учеников с таким именем. '
             'Введите полное имя ученика'
         )
-        exit(1)
+        return None
     return schoolkid
 
 
 def fix_marks(schoolkid_name: str) -> None:
     schoolkid = get_schoolkid(schoolkid_name)
+    if not schoolkid:
+        return None
     bad_marks = Mark.objects.filter(schoolkid=schoolkid).filter(
         points__range=(2, 3)
     )
@@ -36,6 +38,8 @@ def fix_marks(schoolkid_name: str) -> None:
 
 def remove_chastisements(schoolkid_name: str) -> None:
     schoolkid = get_schoolkid(schoolkid_name)
+    if not schoolkid:
+        return None
     chastisements = Chastisement.objects.filter(schoolkid=schoolkid)
     for chastisement in chastisements:
         chastisement.delete()
@@ -43,6 +47,8 @@ def remove_chastisements(schoolkid_name: str) -> None:
 
 def create_commendation(schoolkid_name: str, subject: str) -> None:
     schoolkid = get_schoolkid(schoolkid_name)
+    if not schoolkid:
+        return None
     try:
         Subject.objects.get(
             title=subject,
@@ -50,7 +56,7 @@ def create_commendation(schoolkid_name: str, subject: str) -> None:
         )
     except Subject.DoesNotExist:
         print('Неверно введено название предмета')
-        exit(1)
+        return None
     lesson = Lesson.objects.filter(
         subject__title=subject,
         year_of_study=schoolkid.year_of_study,
