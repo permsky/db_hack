@@ -51,11 +51,11 @@ def create_commendation(schoolkid_name: str, subject: str) -> None:
     except Subject.DoesNotExist:
         print('Неверно введено название предмета')
         exit(1)
-    lessons = Lesson.objects.filter(
+    lesson = Lesson.objects.filter(
         subject__title=subject,
         year_of_study=schoolkid.year_of_study,
         group_letter=schoolkid.group_letter
-    )
+    ).order_by('?').first()
     commendation_texts = [
         'Молодец!',
         'Отлично!',
@@ -88,12 +88,15 @@ def create_commendation(schoolkid_name: str, subject: str) -> None:
         'Ты многое сделал, я это вижу!',
         'Теперь у тебя точно все получится!'
     ]
-    lesson = random.choice(lessons)
     while Commendation.objects.filter(
         created=lesson.date,
         subject=lesson.subject
     ):
-        lesson = random.choice(lessons)
+        lesson = Lesson.objects.filter(
+            subject__title=subject,
+            year_of_study=schoolkid.year_of_study,
+            group_letter=schoolkid.group_letter
+        ).order_by('?').first()
     Commendation.objects.create(
         text=random.choice(commendation_texts),
         created=lesson.date,
