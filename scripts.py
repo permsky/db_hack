@@ -94,11 +94,10 @@ def create_commendation(schoolkid_name: str, subject: str) -> None:
         subject=lesson.subject
     ):
         lesson = random.choice(lessons)
-    new_commendation = Commendation.objects.create(
+    Commendation.objects.create(
         text=random.choice(commendation_texts),
         created=lesson.date,
         schoolkid=schoolkid,
         subject=lesson.subject,
         teacher=lesson.teacher
     )
-    new_commendation.save()
